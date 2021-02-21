@@ -1,10 +1,11 @@
-(ns rex-bot.core
+(ns rex.core
   (:require [clojure.edn :as edn]
             [clojure.core.async :refer [chan close!]]
             [discljord.messaging :as discord-rest]
             [discljord.connections :as discord-ws]
             [discljord.formatting :refer [mention-user]]
-            [discljord.events :refer [message-pump!]]))
+            [discljord.events :refer [message-pump!]])
+  (:gen-class))
 
 (def state (atom nil))
 
