@@ -5,7 +5,9 @@
             [discljord.connections :as discord-ws]
             [discljord.formatting :refer [mention-user]]
             [discljord.events :refer [message-pump!]])
-  (:gen-class))
+  (:gen-class)
+  (:import (java.time LocalDateTime)
+           (java.time.temporal ChronoUnit)))
 
 (def state (atom nil))
 
@@ -23,7 +25,12 @@
   (when (some #{@bot-id} (map :id mentions))
     (discord-rest/create-message! (:rest @state) channel-id :content (random-response author)))
   (if (= content "r?ping")
-    (discord-rest/create-message! (:rest @state) channel-id :content "Pong!"))
+    (let [start_time (LocalDateTime/now)]
+      (let [msg (discord-rest/create-message! (:rest @state) channel-id :content "\uD83C\uDFD3 Pinging...")]
+        (let [delivered @msg]
+          (let [end_time (LocalDateTime/now)]
+            (let [elapsed (.until start_time end_time (ChronoUnit/MILLIS))]
+              (discord-rest/edit-message! (:rest @state) channel-id (:id delivered) :content (format "\uD83C\uDFD3 Pong!\nLatency is: %dms." elapsed))))))))
   (if (= content "r?about")
     (discord-rest/create-message! (:rest @state) channel-id :embed
                                   {:color 0x37FEAB
